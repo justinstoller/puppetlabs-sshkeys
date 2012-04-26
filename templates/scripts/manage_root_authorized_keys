@@ -6,6 +6,12 @@ set -u
 # MAKE SURE THIS IS SSL!
 URL="https://raw.github.com/puppetlabs/puppetlabs-sshkeys/master/templates/ssh/authorized_keys"
 
+if [[ `uname` ]]
+then
+else
+  PATH=/usr/sfw/bin:$PATH
+fi
+
 if [[ `uname` == CYGWIN* ]]
 then
   OWNER="Administrator"
@@ -19,7 +25,7 @@ fi
 
 if which wget >/dev/null
 then
-  GET="wget -q -O - ${URL}"
+  GET="wget -O - ${URL} --no-check-certificate"
 else
   GET="curl -o - ${URL}"
 fi
@@ -49,4 +55,4 @@ fi
 $GET > $SSH_HOME/authorized_keys.tmp
 
 # Now move the file into place.  POSIX rename is atomic.
-mv --force $SSH_HOME/authorized_keys.tmp $SSH_HOME/authorized_keys
+mv -f $SSH_HOME/authorized_keys.tmp $SSH_HOME/authorized_keys
